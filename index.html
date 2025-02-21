@@ -8,7 +8,6 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-image: url('background.png'); /* استبدل 'background.png' برابط الصورة الخاصة بك */
             background-size: cover;
             background-position: center;
             color: black;
@@ -77,7 +76,7 @@
             border-radius: 5px;
             font-size: 1em;
         }
-        .question-window, .answer-window, .team-selection-window {
+        .question-window, .answer-window, .team-selection-window, .timer-alert {
             display: none;
             position: fixed;
             top: 0;
@@ -148,6 +147,27 @@
             font-size: 1em;
         }
 
+        /* تنبيه انتهاء الوقت */
+        .timer-alert {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 1.5em;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* خلفيات مختلفة للأجهزة */
+        @media (min-width: 768px) {
+            body {
+                background-image: url('backgrounds/large-background.png'); /* خلفية للأجهزة الكبيرة */
+            }
+        }
+        @media (max-width: 768px) {
+            body {
+                background-image: url('backgrounds/small-background.png'); /* خلفية للأجهزة الصغيرة */
+            }
+        }
+
         /* استعلامات وسائط للأجهزة الصغيرة */
         @media (max-width: 768px) {
             h1 {
@@ -184,19 +204,19 @@
     <div class="squares-container" id="squaresContainer"></div>
     <div class="result-container">
         <div class="team-result">
-            <span>الفريق الازرق:</span>
+            <span>الفريق الأزرق:</span>
             <div class="score-box">
-                <button class="score-btn" onclick="updateScore('team1', -1)">-</button>
-                <span id="team1Score">0</span>
-                <button class="score-btn" onclick="updateScore('team1', 1)">+</button>
+                <button class="score-btn" onclick="updateScore('blue', -1)">-</button>
+                <span id="blueScore">0</span>
+                <button class="score-btn" onclick="updateScore('blue', 1)">+</button>
             </div>
         </div>
         <div class="team-result">
-            <span>الفريق الاصفر:</span>
+            <span>الفريق الأصفر:</span>
             <div class="score-box">
-                <button class="score-btn" onclick="updateScore('team2', -1)">-</button>
-                <span id="team2Score">0</span>
-                <button class="score-btn" onclick="updateScore('team2', 1)">+</button>
+                <button class="score-btn" onclick="updateScore('yellow', -1)">-</button>
+                <span id="yellowScore">0</span>
+                <button class="score-btn" onclick="updateScore('yellow', 1)">+</button>
             </div>
         </div>
     </div>
@@ -205,6 +225,7 @@
     <div class="question-window" id="questionWindow">
         <div class="question-content">
             <img id="questionImage" src="" alt="السؤال">
+            <p>الوقت المتبقي: <span id="timer">30</span> ثانية</p>
             <button class="close-btn" onclick="openAnswer()">اضغط للإجابة</button>
         </div>
     </div>
@@ -225,9 +246,14 @@
     <div class="team-selection-window" id="teamSelectionWindow">
         <div class="team-selection-content">
             <p>اختر الفريق:</p>
-            <button class="team-btn" onclick="handleTeamSelection('team1')">الفريق الازرق</button>
-            <button class="team-btn" onclick="handleTeamSelection('team2')">الفريق الاصفر</button>
+            <button class="team-btn" onclick="handleTeamSelection('blue')">الفريق الأزرق</button>
+            <button class="team-btn" onclick="handleTeamSelection('yellow')">الفريق الأصفر</button>
         </div>
+    </div>
+
+    <!-- Timer Alert -->
+    <div class="timer-alert" id="timerAlert">
+        <p>انتهى الوقت!</p>
     </div>
 
     <!-- Audio Elements -->
@@ -237,31 +263,32 @@
 
     <script>
         const squares = [];
-          const questions = [
-    { question: 'q1.png', answer: 'a1.png' },
-    { question: 'q2.png', answer: 'a2.png' },
-    { question: 'q3.png', answer: 'a3.png' },
-    { question: 'q4.png', answer: 'a4.png' },
-    { question: 'q5.png', answer: 'a5.png' },
-    { question: 'q6.png', answer: 'a6.png' },
-    { question: 'q7.png', answer: 'a7.png' },
-    { question: 'q8.png', answer: 'a8.png' },
-    { question: 'q9.png', answer: 'a9.png' },
-    { question: 'q10.png', answer: 'a10.png' },
-    { question: 'q11.png', answer: 'a11.png' },
-    { question: 'q12.png', answer: 'a12.png' },
-    { question: 'q13.png', answer: 'a13.png' },
-    { question: 'q14.png', answer: 'a14.png' },
-    { question: 'q15.png', answer: 'a15.png' },
-    { question: 'q16.png', answer: 'a16.png' },
-    { question: 'q17.png', answer: 'a17.png' },
-    { question: 'q18.png', answer: 'a18.png' },
-    { question: 'q19.png', answer: 'a19.png' },
-    { question: 'q20.png', answer: 'a20.png' }
+        const questions = [
+    { question: 'images/q1.png', answer: 'images/a1.png' },
+    { question: 'images/q2.png', answer: 'images/a2.png' },
+    { question: 'images/q3.png', answer: 'images/a3.png' },
+    { question: 'images/q4.png', answer: 'images/a4.png' },
+    { question: 'images/q5.png', answer: 'images/a5.png' },
+    { question: 'images/q6.png', answer: 'images/a6.png' },
+    { question: 'images/q7.png', answer: 'images/a7.png' },
+    { question: 'images/q8.png', answer: 'images/a8.png' },
+    { question: 'images/q9.png', answer: 'images/a9.png' },
+    { question: 'images/q10.png', answer: 'images/a10.png' },
+    { question: 'images/q11.png', answer: 'images/a11.png' },
+    { question: 'images/q12.png', answer: 'images/a12.png' },
+    { question: 'images/q13.png', answer: 'images/a13.png' },
+    { question: 'images/q14.png', answer: 'images/a14.png' },
+    { question: 'images/q15.png', answer: 'images/a15.png' },
+    { question: 'images/q16.png', answer: 'images/a16.png' },
+    { question: 'images/q17.png', answer: 'images/a17.png' },
+    { question: 'images/q18.png', answer: 'images/a18.png' },
+    { question: 'images/q19.png', answer: 'images/a19.png' },
+    { question: 'images/q20.png', answer: 'images/a20.png' }
 ];
 
         let currentSquareIndex = null;
         let currentAction = null;
+        let timerInterval;
 
         function createSquares() {
             const container = document.getElementById('squaresContainer');
@@ -280,6 +307,7 @@
                 currentSquareIndex = index;
                 squares[index].classList.add('used');
                 openQuestion(questions[index]?.question || '');
+                startTimer();
             }
         }
 
@@ -296,10 +324,12 @@
             answerImage.src = questions[currentSquareIndex]?.answer || '';
             document.getElementById('questionWindow').style.display = 'none';
             answerWindow.style.display = 'flex';
+            resetTimer();
         }
 
         function closeAnswer() {
             document.getElementById('answerWindow').style.display = 'none';
+            resetTimer();
         }
 
         function showTeamSelection(action) {
@@ -327,6 +357,7 @@
                     });
                 }
             } else if (currentAction === null) {
+                alert("مفاجأة! لا توجد نقاط مضافة أو مخصومة.");
                 if (surpriseSound) {
                     surpriseSound.play().catch(error => {
                         console.error("خطأ في تشغيل صوت المفاجأة:", error);
@@ -338,17 +369,43 @@
             closeAnswer();
         }
 
-        let team1Score = 0;
-        let team2Score = 0;
+        let blueScore = 0;
+        let yellowScore = 0;
 
         function updateScore(team, value) {
-            if (team === 'team1') {
-                team1Score = Math.max(-100, Math.min(100, team1Score + value));
-                document.getElementById('team1Score').textContent = team1Score;
-            } else if (team === 'team2') {
-                team2Score = Math.max(-100, Math.min(100, team2Score + value));
-                document.getElementById('team2Score').textContent = team2Score;
+            if (team === 'blue') {
+                blueScore = Math.max(-100, Math.min(100, blueScore + value));
+                document.getElementById('blueScore').textContent = blueScore;
+            } else if (team === 'yellow') {
+                yellowScore = Math.max(-100, Math.min(100, yellowScore + value));
+                document.getElementById('yellowScore').textContent = yellowScore;
             }
+        }
+
+        function startTimer() {
+            let timeLeft = 30;
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = timeLeft;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    const timerAlert = document.getElementById('timerAlert');
+                    timerAlert.style.display = 'flex'; // عرض التنبيه
+                    setTimeout(() => {
+                        timerAlert.style.display = 'none'; // إخفاء التنبيه بعد ثانيتين
+                        closeAnswer(); // إغلاق نافذة الإجابة
+                    }, 2000);
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer').textContent = 30;
         }
 
         createSquares();
