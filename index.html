@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مسابقة مومو الرمضانية</title>
+    <title>مسابقة رسلان و المهرة الرمضانية</title>
     <style>
         body {
             margin: 0;
@@ -225,7 +225,7 @@
     <div class="question-window" id="questionWindow">
         <div class="question-content">
             <img id="questionImage" src="" alt="السؤال">
-            <p>الوقت المتبقي: <span id="timer">30</span> ثانية</p>
+            <p>الوقت المتبقي: <span id="timer">15</span> ثانية</p>
             <button class="close-btn" onclick="openAnswer()">اضغط للإجابة</button>
         </div>
     </div>
@@ -383,7 +383,7 @@
         }
 
         function startTimer() {
-            let timeLeft = 30;
+            let timeLeft = 15;
             const timerElement = document.getElementById('timer');
             timerElement.textContent = timeLeft;
 
@@ -405,7 +405,7 @@
 
         function resetTimer() {
             clearInterval(timerInterval);
-            document.getElementById('timer').textContent = 30;
+            document.getElementById('timer').textContent = 15;
         }
 
         createSquares();
